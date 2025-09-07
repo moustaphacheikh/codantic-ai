@@ -1,0 +1,24 @@
+[project]
+name = "codantic-ai"
+version = "0.1.0"
+description = "Educational AI agent loop with file system tools using Pydantic AI and Google Gemini"
+readme = "README.md"
+keywords = ["ai", "agent", "education", "pydantic-ai", "gemini"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+authors = [{name = "Moustapha Cheikh", email = "devcheikh@gmail.com"}]
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic-ai>=1.0.1",
+    "python-dotenv>=1.1.1",
+    "rich>=14.1.0",
+]
+
+[tool.uv]
+compile-bytecode = false
