@@ -13,7 +13,7 @@ Uses `pydantic_ai.direct.model_request_sync()` - minimal abstraction perfect for
 
 ## 🎬 **Live Demo**
 
-[![asciicast](https://asciinema.org/a/eH0Mktbv8TTNlEyUFJ8nYpV74.svg)](https://asciinema.org/a/eH0Mktbv8TTNlEyUFJ8nYpV74)
+![Demo](demo.gif)
 
 ## 🛠 **9 Built-in Tools**
 
