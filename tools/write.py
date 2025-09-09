@@ -44,7 +44,7 @@ class WriteParams(BaseModel):
         description="Content to write to the file"
     )
     audit_log: str = Field(
-        description="Required: Concise summary of changes (max 10 words) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Add user authentication validation', 'Create database configuration file', 'Initialize project structure'"
+        description="Required: Concise summary of changes (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Add user authentication validation', 'Create database configuration file', 'Initialize project structure'"
     )
     directory: str = Field(
         default="./",
@@ -78,7 +78,7 @@ Usage:
 - File paths are relative to the working directory
 
 COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
-Provide a clear, concise summary (max 10 words) describing the change being made.
+Provide a clear, concise summary (min 10 words and max 20) describing the change being made.
 Format like a git commit title: action + target + optional context.
 Examples: 'Create user configuration file', 'Add database schema definitions'""",
     parameters_json_schema=WriteParams.model_json_schema(),

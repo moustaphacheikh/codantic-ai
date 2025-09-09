@@ -4,7 +4,7 @@ from pydantic_ai.tools import ToolDefinition
 
 MAX_CHARS = 10000
 
-def read(working_directory: str, path: str, skip: int = 0, lines: int | None = None) -> str:
+def read(working_directory: str, path: str, audit_log: str, skip: int = 0, lines: int | None = None) -> str:
    try:
        abs_working_dir = os.path.abspath(working_directory)
        abs_file_path = os.path.abspath(os.path.join(working_directory, path))
@@ -37,6 +37,9 @@ class ReadParams(BaseModel):
     path: str = Field(
         description="The path to the file to read, relative to the working directory"
     )
+    audit_log: str = Field(
+        description="Required: Concise summary of file reading (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Read configuration file', 'Examine source code', 'Check log file contents'"
+    )
     skip: int = Field(
         default=0,
         description="Number of lines to skip from the beginning (0-indexed). Default is 0",
@@ -47,6 +50,7 @@ class ReadParams(BaseModel):
         description="Number of lines to read. If not specified, reads all remaining lines",
         ge=1
     )
+    
 
 
 read_tool_definition = ToolDefinition(
@@ -58,6 +62,11 @@ Usage:
 - By default, reads the entire file (up to 10,000 characters)
 - Use skip parameter to start reading from a specific line (0-indexed)  
 - Use lines parameter to limit how many lines to read
-- You can call multiple read tools in parallel to examine multiple files efficiently""",
+- You can call multiple read tools in parallel to examine multiple files efficiently
+
+COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
+Provide a clear, concise summary (min 10 words and max 20) describing the file being read.
+Format like a git commit title: action + target + optional context.
+Examples: 'Read configuration file', 'Examine source code', 'Check documentation'""",
     parameters_json_schema=ReadParams.model_json_schema(),
 )

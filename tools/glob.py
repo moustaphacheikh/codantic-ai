@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from pydantic_ai.tools import ToolDefinition
 
-def glob(working_directory: str, pattern: str, path: str | None = None) -> str:
+def glob(working_directory: str, pattern: str, audit_log: str, path: str | None = None) -> str:
     try:
         abs_working_dir = os.path.abspath(working_directory)
         
@@ -40,10 +40,14 @@ class GlobParams(BaseModel):
     pattern: str = Field(
         description="The glob pattern to match files against (e.g., '*.py', '**/*.js', 'src/**/*.ts')"
     )
+    audit_log: str = Field(
+        description="Required: Concise summary of file search (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Search Python files in src', 'Find JavaScript test files', 'Locate configuration files'"
+    )
     path: str | None = Field(
         default=None,
         description="The directory to search in. If not specified, the current working directory will be used"
     )
+    
 
 
 glob_tool_definition = ToolDefinition(
@@ -54,6 +58,11 @@ Usage:
 - Supports glob patterns like "**/*.py" or "src/**/*.ts"
 - Returns matching file paths sorted by modification time
 - More efficient than bash find commands for file discovery
-- Use when you need to locate files by name or extension patterns""",
+- Use when you need to locate files by name or extension patterns
+
+COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
+Provide a clear, concise summary (min 10 words and max 20) describing the file search being performed.
+Format like a git commit title: action + target + optional context.
+Examples: 'Search Python files', 'Find test configuration files', 'Locate TypeScript modules'""",
     parameters_json_schema=GlobParams.model_json_schema(),
 )

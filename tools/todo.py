@@ -6,7 +6,7 @@ from pydantic_ai.tools import ToolDefinition
 
 TODO_FILE = "todos.json"
 
-def todo_list(working_directory: str) -> str:
+def todo_list(working_directory: str, audit_log: str) -> str:
     """List all todos"""
     try:
         todo_path = os.path.join(working_directory, TODO_FILE)
@@ -28,7 +28,7 @@ def todo_list(working_directory: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
-def todo_add(working_directory: str, task: str) -> str:
+def todo_add(working_directory: str, task: str, audit_log: str) -> str:
     """Add a new todo"""
     try:
         todo_path = os.path.join(working_directory, TODO_FILE)
@@ -47,7 +47,7 @@ def todo_add(working_directory: str, task: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
-def todo_done(working_directory: str, index: int) -> str:
+def todo_done(working_directory: str, index: int, audit_log: str) -> str:
     """Mark todo as done"""
     try:
         todo_path = os.path.join(working_directory, TODO_FILE)
@@ -69,7 +69,7 @@ def todo_done(working_directory: str, index: int) -> str:
     except Exception as e:
         return f"Error: {e}"
 
-def todo_remove(working_directory: str, index: int) -> str:
+def todo_remove(working_directory: str, index: int, audit_log: str) -> str:
     """Remove a todo"""
     try:
         todo_path = os.path.join(working_directory, TODO_FILE)
@@ -96,6 +96,9 @@ class TodoParams(BaseModel):
     action: Literal["list", "add", "done", "remove"] = Field(
         description="Action to perform: 'list', 'add', 'done', 'remove'"
     )
+    audit_log: str = Field(
+        description="Required: Concise summary of todo action (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'List project tasks', 'Add feature implementation task', 'Mark task complete'"
+    )
     task: str | None = Field(
         default=None,
         description="Task description (required for 'add')"
@@ -105,6 +108,7 @@ class TodoParams(BaseModel):
         description="Todo number (required for 'done' and 'remove')",
         gt=0
     )
+    
 
 
 todo_tool_definition = ToolDefinition(
@@ -116,25 +120,30 @@ Usage:
 - Use 'done' to mark tasks complete and track progress
 - Use 'list' to see current task status
 - Use 'remove' to clean up irrelevant tasks
-- Essential for breaking down complex tasks into manageable steps""",
+- Essential for breaking down complex tasks into manageable steps
+
+COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
+Provide a clear, concise summary (min 10 words and max 20) describing the todo action being performed.
+Format like a git commit title: action + target + optional context.
+Examples: 'List project tasks', 'Add new task', 'Mark task complete', 'Remove completed task'""",
     parameters_json_schema=TodoParams.model_json_schema(),
 )
 
-def todo(working_directory: str, action: str, task: str | None = None, index: int | None = None) -> str:
+def todo(working_directory: str, action: str, audit_log: str, task: str | None = None, index: int | None = None) -> str:
     """Main todo function"""
     if action == "list":
-        return todo_list(working_directory)
+        return todo_list(working_directory, audit_log)
     elif action == "add":
         if not task:
             return "Error: Task required for add action"
-        return todo_add(working_directory, task)
+        return todo_add(working_directory, task, audit_log)
     elif action == "done":
         if not index:
             return "Error: Index required for done action"
-        return todo_done(working_directory, index)
+        return todo_done(working_directory, index, audit_log)
     elif action == "remove":
         if not index:
             return "Error: Index required for remove action"
-        return todo_remove(working_directory, index)
+        return todo_remove(working_directory, index, audit_log)
     else:
         return f"Error: Unknown action '{action}'"

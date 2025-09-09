@@ -2,7 +2,7 @@ import os
 from pydantic import BaseModel, Field
 from pydantic_ai.tools import ToolDefinition
 
-def ls(working_directory: str, directory: str = "./") -> str:
+def ls(working_directory: str, audit_log: str, directory: str = "./") -> str:
    try:
        abs_working_dir = os.path.abspath(working_directory)
        
@@ -38,10 +38,14 @@ def ls(working_directory: str, directory: str = "./") -> str:
 
 class LsParams(BaseModel):
     """Parameters for the ls tool."""
+    audit_log: str = Field(
+        description="Required: Concise summary of directory listing (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'List project source files', 'Check directory structure', 'Browse configuration folder'"
+    )
     directory: str = Field(
         default="./",
         description="Directory path to list files from"
     )
+    
 
 
 ls_tool_definition = ToolDefinition(
@@ -53,6 +57,11 @@ Usage:
 - Returns full paths for all files found
 - Recursively searches subdirectories
 - Use before creating files to verify directory structure
-- Paths are relative to the working directory""",
+- Paths are relative to the working directory
+
+COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
+Provide a clear, concise summary (min 10 words and max 20) describing the directory listing being performed.
+Format like a git commit title: action + target + optional context.
+Examples: 'List project files', 'Check directory structure', 'Browse source folder'""",
     parameters_json_schema=LsParams.model_json_schema(),
 )

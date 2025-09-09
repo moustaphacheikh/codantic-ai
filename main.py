@@ -11,8 +11,8 @@ console = Console()
 def main():
     """Run the agentic loop."""
     # Create welcome message
-    title = Text("🤖 AI Agent Loop, q to quit", style="bold cyan")
-    
+    title = Text("Welcome to the Agent Loop 🤖", style="bold cyan")
+
     welcome_panel = Panel(
         f"{title}",
         border_style="bright_blue",
@@ -27,12 +27,10 @@ def main():
     
     # Create code directory if it doesn't exist
     code_dir = './code'
-    if not os.path.exists(code_dir):
-        os.makedirs(code_dir)
-        console.print(f"📁 Created working directory: {code_dir}")
+    if not os.path.exists(code_dir): os.makedirs(code_dir)
     
     agent = AgentLoop(working_directory=code_dir)
-    agent.loop()
+    agent.chat()
 
 
 if __name__ == "__main__":

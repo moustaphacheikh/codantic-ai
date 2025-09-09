@@ -7,6 +7,7 @@ from .glob import glob, glob_tool_definition
 from .grep import grep, grep_tool_definition
 from .bash import bash, bash_tool_definition
 from .todo import todo, todo_tool_definition
+from pydantic_ai.messages import ToolReturnPart
 
 # List of tool definitions for Pydantic AI
 tools_definitions = [
@@ -20,10 +21,21 @@ tools_definitions = [
     bash_tool_definition,
     todo_tool_definition,
 ]
+icons = {
+            'write': '📝',
+            'edit': '✏️',
+            'multiedit': '📁',
+            'bash': '🔧',
+            'read': '📖',
+            'grep': '🔍',
+            'glob': '📂',
+            'ls': '📁',
+            'todo': '📝'
+        }
 
 
 def execute_tool(function_call_part, working_directory, verbose=False):
-    """Execute a function call with the provided arguments."""
+    """Execute a function call and return a ToolReturnPart."""
     function_map = {
         "read": read,
         "write": write,
@@ -39,9 +51,11 @@ def execute_tool(function_call_part, working_directory, verbose=False):
     # Pydantic AI uses tool_name attribute, not name
     function_name = function_call_part.tool_name
     if function_name not in function_map:
-        return {
-            "error": f"Unknown function: {function_name}"
-        }
+        return ToolReturnPart(
+            tool_name=function_name,
+            content=f"Unknown function: {function_name}",
+            tool_call_id=getattr(function_call_part, 'tool_call_id', 'default')
+        )
     
     # Add working_directory to args
     # Handle both dict and string args from Pydantic AI
@@ -61,6 +75,14 @@ def execute_tool(function_call_part, working_directory, verbose=False):
     
     try:
         function_result = function_map[function_name](**args)
-        return {"result": function_result}
+        return ToolReturnPart(
+            tool_name=function_name,
+            content=str({"result": function_result}),
+            tool_call_id=getattr(function_call_part, 'tool_call_id', 'default')
+        )
     except Exception as e:
-        return {"error": f"Function execution failed: {str(e)}"}
+        return ToolReturnPart(
+            tool_name=function_name,
+            content=str({"error": f"Function execution failed: {str(e)}"}),
+            tool_call_id=getattr(function_call_part, 'tool_call_id', 'default')
+        )

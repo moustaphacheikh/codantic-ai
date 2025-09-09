@@ -75,7 +75,7 @@ class MultieditParams(BaseModel):
         description="Array of edit operations to perform sequentially"
     )
     audit_log: str = Field(
-        description="Required: Concise summary of changes (max 10 words) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Refactor authentication module methods', 'Update multiple API endpoint handlers', 'Fix various null pointer exceptions'"
+        description="Required: Concise summary of changes (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Refactor authentication module methods', 'Update multiple API endpoint handlers', 'Fix various null pointer exceptions'"
     )
     
     @field_validator('audit_log')
@@ -101,7 +101,7 @@ Usage:
 - All edits must succeed or none are applied (atomic operation)
 
 COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
-Provide a clear, concise summary (max 10 words) describing the batch changes being made.
+Provide a clear, concise summary (min 10 words and max 20) describing the batch changes being made.
 Format like a git commit title: action + target + optional context.
 Examples: 'Refactor user authentication module', 'Update multiple deprecated function calls'""",
     parameters_json_schema=MultieditParams.model_json_schema(),

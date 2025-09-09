@@ -8,6 +8,7 @@ from pydantic_ai.tools import ToolDefinition
 def grep(
     working_directory: str,
     pattern: str,
+    audit_log: str,
     path: str = None,
     include: str = None,
     file_type: str = None,
@@ -142,6 +143,9 @@ class GrepParams(BaseModel):
     pattern: str = Field(
         description="The regular expression pattern to search for in file contents"
     )
+    audit_log: str = Field(
+        description="Required: Concise summary of search (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Search error handling patterns', 'Find function definitions', 'Locate import statements'"
+    )
     path: str | None = Field(
         default=None,
         description="File or directory to search in. Defaults to current working directory"
@@ -190,6 +194,7 @@ class GrepParams(BaseModel):
         default=False,
         description="Enable multiline mode where patterns can span lines. Default is False"
     )
+    
 
 
 grep_tool_definition = ToolDefinition(
@@ -201,6 +206,11 @@ Usage:
 - Filter files with file_type parameter (py, js, ts, java, etc.)
 - Use case_insensitive=True for flexible matching  
 - Returns matching lines with line numbers and file paths
-- More efficient than bash grep commands for code search""",
+- More efficient than bash grep commands for code search
+
+COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
+Provide a clear, concise summary (min 10 words and max 20) describing the search being performed.
+Format like a git commit title: action + target + optional context.
+Examples: 'Search error patterns', 'Find function definitions', 'Locate configuration variables'""",
     parameters_json_schema=GrepParams.model_json_schema(),
 )

@@ -50,7 +50,7 @@ class EditParams(BaseModel):
         description="The text to replace it with"
     )
     audit_log: str = Field(
-        description="Required: Concise summary of changes (max 10 words) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Fix null pointer exception', 'Update API endpoint parameters', 'Remove deprecated function calls'"
+        description="Required: Concise summary of changes (min 10 words and max 20) for audit compliance. Like a git commit title - describe WHAT not WHY. Examples: 'Fix null pointer exception', 'Update API endpoint parameters', 'Remove deprecated function calls'"
     )
     global_replace: bool = Field(
         default=False,
@@ -80,7 +80,7 @@ Usage:
 - The edit will fail if search text is not found or is ambiguous
 
 COMPLIANCE: The audit_log parameter is REQUIRED for enterprise audit trails.
-Provide a clear, concise summary (max 10 words) describing the change being made.
+Provide a clear, concise summary (min 10 words and max 20) describing the change being made.
 Format like a git commit title: action + target + optional context.
 Examples: 'Fix SQL injection vulnerability', 'Update deprecated API calls'""",
     parameters_json_schema=EditParams.model_json_schema(),
